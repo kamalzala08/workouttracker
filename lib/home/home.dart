@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'exercise_list.dart'; // Page for exercise list
+import '../exercise/screen/exercise_categories.dart'; // Page for exercise list
 import 'video_list.dart'; // Page for exercise videos
 import 'profile.dart'; // Page for user profile
 import '../weight/weight_page.dart'; // Page for tracking weight
@@ -14,11 +14,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0; // Track the current tab index
 
+  final List<Widget> _pages = [
+    HomeTab(), // Custom widget for Home tab content
+    ExerciseCategories(), // Exercise list
+    VideoList(), // Exercise videos
+    Profile(), // User profile
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final String todayDate =
-    DateFormat.yMMMMd().format(DateTime.now()); // Get today's date
-
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
@@ -44,28 +48,22 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true, // Ensure title is centered
         elevation: 4,
       ),
-      body: Scrollbar(
-        // Adding a scrollbar to improve scroll visibility
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildWelcomeSection(
-                  todayDate), // Welcome message and today's date
-              SizedBox(height: 16),
-              _buildTrackerSection(), // Tracker section with adjustments
-              SizedBox(height: 24),
-              _buildRecentExercises(), // Display recent exercises
-            ],
-          ),
-        ),
-      ),
+      body: _pages[_currentIndex], // Display the corresponding page
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Change the tab when clicked
+            _currentIndex = index;
+
+            if (index == 1) {
+              // If the user clicks on "Exercises", redirect to the Exercise page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExercisePage(), // Redirect to the new page
+                ),
+              );
+            }
           });
         },
         selectedItemColor: Colors.orange.shade700, // Selected tab color
@@ -93,6 +91,41 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+class ExercisePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Exercises"), // New AppBar for this screen
+      ),
+      body: ExerciseCategories(), // The Exercise content
+    );
+  }
+}
+
+class HomeTab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final String todayDate = DateFormat.yMMMMd().format(DateTime.now());
+
+    return Scrollbar(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildWelcomeSection(todayDate),
+            SizedBox(height: 16),
+            _buildTrackerSection(context),
+            SizedBox(height: 24),
+            _buildRecentExercises(),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildWelcomeSection(String todayDate) {
     return Column(
@@ -104,14 +137,16 @@ class _HomePageState extends State<HomePage> {
             fontSize: 26,
             fontWeight: FontWeight.bold,
             color: Colors.orange.shade800,
-            letterSpacing: 1.5, // Slight letter spacing
+            letterSpacing: 1.5,
           ),
-        ), // Welcome message
-        SizedBox(height: 8), // Small spacing
+        ),
+        SizedBox(height: 8),
         Row(
           children: [
-            Icon(FontAwesomeIcons.calendarDay,
-                color: Colors.orange.shade700), // Date icon
+            Icon(
+              FontAwesomeIcons.calendarDay,
+              color: Colors.orange.shade700,
+            ),
             SizedBox(width: 8),
             Text(
               todayDate,
@@ -121,41 +156,51 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ],
-        ), // Display today's date
+        ),
       ],
     );
   }
 
-  Widget _buildTrackerSection() {
+  Widget _buildTrackerSection(BuildContext context) {
     return Row(
-      mainAxisAlignment:
-      MainAxisAlignment.spaceEvenly, // Evenly distribute items
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildElevatedTrackerBox("Weight", "70 kg", FontAwesomeIcons.dumbbell,
-                () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WeightPage(), // Navigate to WeightPage
-                ),
-              );
-            }), // Elevated tracker box for weight
-        _buildElevatedTrackerBox("Height", "180 cm", FontAwesomeIcons.ruler),
+        _buildElevatedTrackerBox("Weight", "70 kg", FontAwesomeIcons.dumbbell, context),
+        _buildElevatedTrackerBox("Height", "180 cm", FontAwesomeIcons.ruler, context),
         _buildElevatedTrackerBox(
-            "BMI", "21.6", FontAwesomeIcons.scaleUnbalanced),
+          "BMI",
+          "21.6",
+          FontAwesomeIcons.scaleUnbalanced, context,
+        ),
       ],
     );
   }
 
-  Widget _buildElevatedTrackerBox(String name, String value, IconData icon,
-      [VoidCallback? onTap]) {
+  Widget _buildElevatedTrackerBox(
+      String name,
+      String value,
+      IconData icon,
+      BuildContext context,
+      [VoidCallback? onTap]
+      ) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        if (onTap != null) {
+          onTap();
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WeightPage(), // Navigate to WeightPage
+            ),
+          );
+        }
+      },
       child: Container(
-        padding: EdgeInsets.all(16), // Consistent padding for elevation
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.orange.shade50, // Light orange background
-          borderRadius: BorderRadius.circular(12), // Rounded corners
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -167,25 +212,31 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            FaIcon(icon,
-                color: Colors.orange.shade700, size: 32), // Larger icon
-            SizedBox(height: 8), // Spacing
+          children:
+          [
+            FaIcon(
+              icon,
+              color: Colors.orange.shade700,
+              size: 32,
+            ),
+            SizedBox(height: 8),
             Text(
               name,
-              style: TextStyle(
+              style:
+              TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.orange.shade700,
               ),
-            ), // Tracker name
+            ),
             Text(
               value,
-              style: TextStyle(
+              style:
+              TextStyle(
                 fontSize: 12,
                 color: Colors.grey.shade600,
               ),
-            ), // Tracker value
+            ),
           ],
         ),
       ),
@@ -195,7 +246,8 @@ class _HomePageState extends State<HomePage> {
   Widget _buildRecentExercises() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children:
+      [
         Text(
           'Recent Exercises',
           style: TextStyle(
@@ -206,15 +258,14 @@ class _HomePageState extends State<HomePage> {
         ),
         SizedBox(height: 16),
         _buildExerciseTile(
-            "Bench Press", "3 sets of 10 reps", FontAwesomeIcons.dumbbell),
-        _buildExerciseTile("Chest Fly", "3 sets of 12 reps",
-            FontAwesomeIcons.handHoldingHeart),
-        _buildExerciseTile(
-            "Push-Ups", "4 sets of 15 reps", FontAwesomeIcons.hands),
-        _buildExerciseTile("Incline Bench Press", "3 sets of 10 reps",
-            FontAwesomeIcons.longArrowAltUp),
-        _buildExerciseTile("Decline Bench Press", "3 sets of 10 reps",
-            FontAwesomeIcons.longArrowAltDown),
+          "Bench Press",
+          "3 sets of 10 reps",
+          FontAwesomeIcons.dumbbell,
+        ),
+        _buildExerciseTile("Chest Fly", "3 sets of 12 reps", FontAwesomeIcons.handHoldingHeart),
+        _buildExerciseTile("Push-Ups", "4 sets of 15 reps", FontAwesomeIcons.hands),
+        _buildExerciseTile("Incline Bench Press", "3 sets of 10 reps", FontAwesomeIcons.longArrowAltUp),
+        _buildExerciseTile("Decline Bench Press", "3 sets of 10 reps", FontAwesomeIcons.longArrowAltDown),
       ],
     );
   }
@@ -227,15 +278,18 @@ class _HomePageState extends State<HomePage> {
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style:
+        TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
           color: Colors.orange.shade700,
         ),
       ),
-      subtitle: Text(
+      subtitle:
+      Text(
         subtitle,
-        style: TextStyle(
+        style:
+        TextStyle(
           color: Colors.grey.shade600,
         ),
       ),
