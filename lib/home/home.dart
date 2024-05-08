@@ -5,9 +5,12 @@ import '../videos/video_list.dart';
 import '../weight/weight_page.dart';
 import '../height/height_page.dart';
 import '../components/appbar.dart';
-import '../components/bottom_navigation.dart'; // Custom bottom navigation bar widget
+import '../components/bottom_navigation.dart';
 import '../exercise/screens/exercise_categories.dart';
 import '../profile/profile.dart';
+import '../profile/user.dart';
+import '../profile/userprovider.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -33,7 +36,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       },
       child: Scaffold(
         appBar: CustomGradientAppBar(),
-        body: HomePageContent(context),
+        body: HomePageContent(),
         bottomNavigationBar: CustomBottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
@@ -86,22 +89,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 }
 
 class HomePageContent extends StatelessWidget {
-  final BuildContext context;
-
-  HomePageContent(this.context);
-
   @override
   Widget build(BuildContext context) {
     final String todayDate = DateFormat.yMMMMd().format(DateTime.now());
+    final userProvider = Provider.of<UserProvider>(context);
+    final currentUser = userProvider.currentUser;
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWelcomeSection(todayDate),
+          _buildWelcomeSection(todayDate, currentUser),
           SizedBox(height: 16),
-          _buildTrackerSection(),
+          _buildTrackerSection(context),
           SizedBox(height: 24),
           _buildRecentExercises(),
         ],
@@ -109,12 +110,14 @@ class HomePageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeSection(String todayDate) {
+  Widget _buildWelcomeSection(String todayDate, User? currentUser) {
+    final userName = currentUser != null ? currentUser.name : 'Guest';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hello, Kamal Zala',
+          'Hello, $userName',
           style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
@@ -143,28 +146,28 @@ class HomePageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildTrackerSection() {
+  Widget _buildTrackerSection(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _buildElevatedTrackerBox("Weight", "70 kg", FontAwesomeIcons.dumbbell,
-            () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WeightPage(),
-            ),
-          );
-        }),
+                () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WeightPage(),
+                ),
+              );
+            }),
         _buildElevatedTrackerBox("Height", "180 cm", FontAwesomeIcons.ruler,
-            () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HeightPage(),
-            ),
-          );
-        }),
+                () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HeightPage(),
+                ),
+              );
+            }),
         _buildElevatedTrackerBox(
             "BMI", "21.6", FontAwesomeIcons.scaleUnbalanced),
       ],

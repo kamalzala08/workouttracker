@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class Profile extends StatelessWidget {
+class ProfilePage extends StatelessWidget {
+  final User user;
+
+  ProfilePage({required this.user});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

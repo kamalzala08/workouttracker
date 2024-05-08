@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart'; // For loading spinner
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart'; // Import Provider package
+import 'package:workouttracker/home/home.dart';
 import '../services/login_service.dart';
-import 'forget_password.dart'; // Forgot password screen
-import 'registration.dart'; // Registration screen
-import '../../welcome_screen.dart'; // Welcome screen
+import 'forget_password.dart';
+import 'registration.dart';
+import 'package:workouttracker/profile/userprovider.dart';
+import '../../profile/user.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -15,17 +18,19 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final LoginService _loginService = LoginService();
-  bool _isPasswordVisible = false; // To control password visibility
-  bool _isLoading = false; // For loading indication
+  bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   void _togglePasswordVisibility() {
     setState(() {
-      _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+      _isPasswordVisible = !_isPasswordVisible;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context); // Access UserProvider
+
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -35,7 +40,6 @@ class _LoginState extends State<Login> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Brand icon with title
                 Icon(
                   FontAwesomeIcons.dumbbell,
                   color: Colors.orange.shade700,
@@ -51,8 +55,6 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 SizedBox(height: 32),
-
-                // Email Text Field
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -68,8 +70,6 @@ class _LoginState extends State<Login> {
                   style: TextStyle(color: Colors.black),
                 ),
                 SizedBox(height: 16),
-
-                // Password Text Field with Show/Hide Toggle
                 TextField(
                   controller: _passwordController,
                   decoration: InputDecoration(
@@ -88,12 +88,10 @@ class _LoginState extends State<Login> {
                     filled: true,
                     fillColor: Colors.grey.shade200,
                   ),
-                  obscureText: !_isPasswordVisible, // Hide text by default
+                  obscureText: !_isPasswordVisible,
                   style: TextStyle(color: Colors.black),
                 ),
                 SizedBox(height: 8),
-
-                // "Forgot Password?" positioned below the password field
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -108,8 +106,6 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 SizedBox(height: 32),
-
-                // Login Button matching text field width
                 Container(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -133,8 +129,6 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 SizedBox(height: 16),
-
-                // Google Sign-In Button matching text field width
                 Container(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -164,13 +158,11 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 SizedBox(height: 32),
-
-                // "Don't have an account?" with clickable "Register now"
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account?",
+                      "Don't have an account ? ",
                       style: TextStyle(color: Colors.black),
                     ),
                     GestureDetector(
@@ -207,11 +199,19 @@ class _LoginState extends State<Login> {
       setState(() {
         _isLoading = false;
       });
-
       if (user != null) {
+        User user2 = User(
+          uid: user.uid ?? '00', // Convert UID to integer
+          email: user.email ?? '', // Get email
+          name: user.displayName ?? '', // Get display name
+        );
+        print("email");
+        print(user.email);
+        final userProvider = Provider.of<UserProvider>(context, listen: false); // Access UserProvider
+        userProvider.setUser(user2); // Set user in UserProvider
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => WelcomeScreen(userEmail: email)),
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -241,9 +241,11 @@ class _LoginState extends State<Login> {
       });
 
       if (user != null) {
+        // final userProvider = Provider.of<UserProvider>(context, listen: false); // Access UserProvider
+        // userProvider.setUser(user); // Set user in UserProvider
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => WelcomeScreen(userEmail: user.email ?? '')),
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
