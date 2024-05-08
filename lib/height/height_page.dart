@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'add_weight_dialog.dart'; // Import the dialog class\
+import 'add_height_dialog.dart'; // Import the dialog class
 import '../components/appbar.dart';
 import '../components/bottom_navigation.dart';
 import '../exercise/screens/exercise_categories.dart';
 import '../home/home.dart';
 import '../profile/profile.dart';
 
-class WeightPage extends StatefulWidget {
+class HeightPage extends StatefulWidget {
   @override
-  _WeightPageState createState() => _WeightPageState();
+  _HeightPageState createState() => _HeightPageState();
 }
 
-class _WeightPageState extends State<WeightPage>
+class _HeightPageState extends State<HeightPage>
     with SingleTickerProviderStateMixin {
-  List<WeightData> allWeightData =
+  List<HeightData> allHeightData =
       _generateDummyData(); // 50 days of dummy data
-  List<WeightData> displayedData = [];
+  List<HeightData> displayedData = [];
   String _selectedFilter = '7 days'; // Default filter
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -119,9 +119,9 @@ class _WeightPageState extends State<WeightPage>
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    _showAddWeightDialog(context); // Show the modal dialog
+                    _showAddHeightDialog(context); // Show the modal dialog
                   },
-                  child: Text("Add Today's Weight"),
+                  child: Text("Add Today's Height"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange, // Background color
                     foregroundColor: Colors.white, // Text color
@@ -136,16 +136,16 @@ class _WeightPageState extends State<WeightPage>
                 ),
               ),
               SizedBox(height: 16),
-              _buildWeightInfo(
-                  "Average Weight", _calculateAverageWeight(displayedData)),
+              _buildHeightInfo(
+                  "Average Height", _calculateAverageHeight(displayedData)),
               SizedBox(height: 16),
-              _buildWeightInfo(
-                  "Minimum Weight", _calculateMinWeight(displayedData)),
+              _buildHeightInfo(
+                  "Minimum Height", _calculateMinHeight(displayedData)),
               SizedBox(height: 16),
-              _buildWeightInfo(
-                  "Maximum Weight", _calculateMaxWeight(displayedData)),
+              _buildHeightInfo(
+                  "Maximum Height", _calculateMaxHeight(displayedData)),
               SizedBox(height: 16),
-              _getWeightChangeMessage(), // Display weight change message
+              _getHeightChangeMessage(), // Display height change message
               SizedBox(height: 100), // Add some extra space at the bottom
             ],
           ),
@@ -188,15 +188,15 @@ class _WeightPageState extends State<WeightPage>
     );
   }
 
-  static List<WeightData> _generateDummyData() {
-    final List<WeightData> data = [];
+  static List<HeightData> _generateDummyData() {
+    final List<HeightData> data = [];
     final DateTime today = DateTime.now();
 
     for (int i = 0; i < 50; i++) {
       data.add(
-        WeightData(
-          today.subtract(Duration(days: i)), // 50 days of weight data
-          70 + (i % 5), // Varying weight values
+        HeightData(
+          today.subtract(Duration(days: i)), // 50 days of height data
+          160 + (i % 3), // Varying height values
         ),
       );
     }
@@ -204,14 +204,14 @@ class _WeightPageState extends State<WeightPage>
     return data.reversed.toList(); // Reverse for correct order
   }
 
-  List<charts.Series<WeightData, DateTime>> _getChartData(
-      List<WeightData> data) {
+  List<charts.Series<HeightData, DateTime>> _getChartData(
+      List<HeightData> data) {
     return [
-      charts.Series<WeightData, DateTime>(
-        id: 'Weight',
+      charts.Series<HeightData, DateTime>(
+        id: 'Height',
         data: data,
-        domainFn: (WeightData wd, _) => wd.date,
-        measureFn: (WeightData wd, _) => wd.weight,
+        domainFn: (HeightData hd, _) => hd.date,
+        measureFn: (HeightData hd, _) => hd.height,
         colorFn: (_, __) =>
             charts.MaterialPalette.deepOrange.shadeDefault, // Line color
       ),
@@ -238,20 +238,20 @@ class _WeightPageState extends State<WeightPage>
     }
 
     final filteredData =
-        allWeightData.where((data) => data.date.isAfter(startDate)).toList();
+        allHeightData.where((data) => data.date.isAfter(startDate)).toList();
 
     setState(() {
       displayedData = filteredData; // Update displayed data with the filter
     });
   }
 
-  void _showAddWeightDialog(BuildContext context) {
+  void _showAddHeightDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddWeightDialog(
-          onAdd: (double weight, DateTime date) {
-            allWeightData.add(WeightData(date, weight)); // Add new data
+        return AddHeightDialog(
+          onAdd: (double height, DateTime date) {
+            allHeightData.add(HeightData(date, height)); // Add new data
             _applyFilter(
                 _selectedFilter); // Reapply the filter to update the display
           },
@@ -260,7 +260,7 @@ class _WeightPageState extends State<WeightPage>
     );
   }
 
-  Widget _buildWeightInfo(String label, String value) {
+  Widget _buildHeightInfo(String label, String value) {
     return Container(
       padding: EdgeInsets.all(12), // Spacing within the container
       decoration: BoxDecoration(
@@ -304,43 +304,43 @@ class _WeightPageState extends State<WeightPage>
     );
   }
 
-  String _calculateAverageWeight(List<WeightData> data) {
-    final totalWeight = data.fold(
-        0.0, (sum, item) => sum + item.weight); // Calculate total weight
-    return (totalWeight / data.length).toStringAsFixed(1); // Format average
+  String _calculateAverageHeight(List<HeightData> data) {
+    final totalHeight = data.fold(
+        0.0, (sum, item) => sum + item.height); // Calculate total height
+    return (totalHeight / data.length).toStringAsFixed(1); // Format average
   }
 
-  String _calculateMinWeight(List<WeightData> data) {
-    final minWeight = data.fold(
-        double.infinity, (min, item) => item.weight < min ? item.weight : min);
-    return minWeight.toStringAsFixed(1); // Format minimum
+  String _calculateMinHeight(List<HeightData> data) {
+    final minHeight = data.fold(
+        double.infinity, (min, item) => item.height < min ? item.height : min);
+    return minHeight.toStringAsFixed(1); // Format minimum
   }
 
-  String _calculateMaxWeight(List<WeightData> data) {
-    final maxWeight = data.fold(double.negativeInfinity,
-        (max, item) => item.weight > max ? item.weight : max); // Find maximum
-    return maxWeight.toStringAsFixed(1); // Format maximum
+  String _calculateMaxHeight(List<HeightData> data) {
+    final maxHeight = data.fold(double.negativeInfinity,
+        (max, item) => item.height > max ? item.height : max); // Find maximum
+    return maxHeight.toStringAsFixed(1); // Format maximum
   }
 
-  Widget _getWeightChangeMessage() {
-    final firstWeight = displayedData.first.weight; // Initial weight
-    final lastWeight = displayedData.last.weight; // Final weight
+  Widget _getHeightChangeMessage() {
+    final firstHeight = displayedData.first.height; // Initial height
+    final lastHeight = displayedData.last.height; // Final height
 
-    final weightChange = lastWeight - firstWeight; // Calculate the change
-    final weightChangeText = weightChange >= 0
-        ? 'Gained ${weightChange.toStringAsFixed(1)} kg' // Gain
-        : 'Lost ${(-weightChange).toStringAsFixed(1)} kg'; // Loss
+    final heightChange = lastHeight - firstHeight; // Calculate the change
+    final heightChangeText = heightChange >= 0
+        ? 'Gained ${heightChange.toStringAsFixed(1)} cm' // Gain
+        : 'Lost ${(-heightChange).toStringAsFixed(1)} cm'; // Loss
 
     return Text(
-      'You have $weightChangeText over the last $_selectedFilter', // Display message
+      'You have $heightChangeText over the last $_selectedFilter', // Display message
       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), // Bold text
     );
   }
 }
 
-class WeightData {
+class HeightData {
   final DateTime date; // Date of measurement
-  final double weight; // Weight value
+  final double height; // Height value
 
-  WeightData(this.date, this.weight); // Constructor for weight data
+  HeightData(this.date, this.height); // Constructor for height data
 }

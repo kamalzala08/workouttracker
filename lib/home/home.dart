@@ -1,128 +1,110 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../exercise/screen/exercise_categories.dart'; // Page for exercise list
-import 'video_list.dart'; // Page for exercise videos
-import 'profile.dart'; // Page for user profile
-import '../weight/weight_page.dart'; // Page for tracking weight
-import 'package:intl/intl.dart'; // To format date
+import 'package:intl/intl.dart';
+import '../videos/video_list.dart';
+import '../weight/weight_page.dart';
+import '../height/height_page.dart';
+import '../components/appbar.dart';
+import '../components/bottom_navigation.dart'; // Custom bottom navigation bar widget
+import '../exercise/screens/exercise_categories.dart';
+import '../profile/profile.dart';
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0; // Track the current tab index
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    HomeTab(), // Custom widget for Home tab content
-    ExerciseCategories(), // Exercise list
-    VideoList(), // Exercise videos
-    Profile(), // User profile
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.orange.shade800, Colors.orange.shade600],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        title: Text(
-          'WorkoutTracker',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-          textAlign: TextAlign.center, // Center the text
-        ),
-        leading:
-        Icon(FontAwesomeIcons.dumbbell, color: Colors.white), // AppBar icon
-        centerTitle: true, // Ensure title is centered
-        elevation: 4,
-      ),
-      body: _pages[_currentIndex], // Display the corresponding page
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-
-            if (index == 1) {
-              // If the user clicks on "Exercises", redirect to the Exercise page
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ExercisePage(), // Redirect to the new page
-                ),
-              );
-            }
-          });
-        },
-        selectedItemColor: Colors.orange.shade700, // Selected tab color
-        unselectedItemColor: Colors.grey, // Unselected tab color
-        backgroundColor: Colors.white,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.house),
-            label: 'Home', // Home page
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.dumbbell),
-            label: 'Exercises', // Exercise page
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.video),
-            label: 'Videos', // Videos page
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.user), // Profile page
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ExercisePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Exercises"), // New AppBar for this screen
-      ),
-      body: ExerciseCategories(), // The Exercise content
-    );
-  }
-}
-
-class HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String todayDate = DateFormat.yMMMMd().format(DateTime.now());
 
-    return Scrollbar(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWelcomeSection(todayDate),
-            SizedBox(height: 16),
-            _buildTrackerSection(context),
-            SizedBox(height: 24),
-            _buildRecentExercises(),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (_currentIndex != 0) {
+          setState(() {
+            _currentIndex = 0;
+          });
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        appBar: CustomGradientAppBar(),
+        body: HomePageContent(context),
+        bottomNavigationBar: CustomBottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            _navigateToScreen(index);
+          },
         ),
+      ),
+    );
+  }
+
+  void _navigateToScreen(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ExerciseCategories(),
+          ),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideosPage(),
+          ),
+        );
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(),
+          ),
+        );
+        break;
+    }
+  }
+}
+
+class HomePageContent extends StatelessWidget {
+  final BuildContext context;
+
+  HomePageContent(this.context);
+
+  @override
+  Widget build(BuildContext context) {
+    final String todayDate = DateFormat.yMMMMd().format(DateTime.now());
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildWelcomeSection(todayDate),
+          SizedBox(height: 16),
+          _buildTrackerSection(),
+          SizedBox(height: 24),
+          _buildRecentExercises(),
+        ],
       ),
     );
   }
@@ -161,41 +143,38 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildTrackerSection(BuildContext context) {
+  Widget _buildTrackerSection() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildElevatedTrackerBox("Weight", "70 kg", FontAwesomeIcons.dumbbell, context),
-        _buildElevatedTrackerBox("Height", "180 cm", FontAwesomeIcons.ruler, context),
+        _buildElevatedTrackerBox("Weight", "70 kg", FontAwesomeIcons.dumbbell,
+            () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WeightPage(),
+            ),
+          );
+        }),
+        _buildElevatedTrackerBox("Height", "180 cm", FontAwesomeIcons.ruler,
+            () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HeightPage(),
+            ),
+          );
+        }),
         _buildElevatedTrackerBox(
-          "BMI",
-          "21.6",
-          FontAwesomeIcons.scaleUnbalanced, context,
-        ),
+            "BMI", "21.6", FontAwesomeIcons.scaleUnbalanced),
       ],
     );
   }
 
-  Widget _buildElevatedTrackerBox(
-      String name,
-      String value,
-      IconData icon,
-      BuildContext context,
-      [VoidCallback? onTap]
-      ) {
+  Widget _buildElevatedTrackerBox(String name, String value, IconData icon,
+      [VoidCallback? onTap]) {
     return GestureDetector(
-      onTap: () {
-        if (onTap != null) {
-          onTap();
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WeightPage(), // Navigate to WeightPage
-            ),
-          );
-        }
-      },
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -206,24 +185,18 @@ class HomeTab extends StatelessWidget {
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 3,
               blurRadius: 5,
-              offset: Offset(0, 3), // Light shadow for elevation
+              offset: Offset(0, 3),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children:
-          [
-            FaIcon(
-              icon,
-              color: Colors.orange.shade700,
-              size: 32,
-            ),
+          children: [
+            FaIcon(icon, color: Colors.orange.shade700, size: 32),
             SizedBox(height: 8),
             Text(
               name,
-              style:
-              TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.orange.shade700,
@@ -231,8 +204,7 @@ class HomeTab extends StatelessWidget {
             ),
             Text(
               value,
-              style:
-              TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey.shade600,
               ),
@@ -246,8 +218,7 @@ class HomeTab extends StatelessWidget {
   Widget _buildRecentExercises() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children:
-      [
+      children: [
         Text(
           'Recent Exercises',
           style: TextStyle(
@@ -262,10 +233,26 @@ class HomeTab extends StatelessWidget {
           "3 sets of 10 reps",
           FontAwesomeIcons.dumbbell,
         ),
-        _buildExerciseTile("Chest Fly", "3 sets of 12 reps", FontAwesomeIcons.handHoldingHeart),
-        _buildExerciseTile("Push-Ups", "4 sets of 15 reps", FontAwesomeIcons.hands),
-        _buildExerciseTile("Incline Bench Press", "3 sets of 10 reps", FontAwesomeIcons.longArrowAltUp),
-        _buildExerciseTile("Decline Bench Press", "3 sets of 10 reps", FontAwesomeIcons.longArrowAltDown),
+        _buildExerciseTile(
+          "Chest Fly",
+          "3 sets of 12 reps",
+          FontAwesomeIcons.handHoldingHeart,
+        ),
+        _buildExerciseTile(
+          "Push-Ups",
+          "4 sets of 15 reps",
+          FontAwesomeIcons.hands,
+        ),
+        _buildExerciseTile(
+          "Incline Bench Press",
+          "3 sets of 10 reps",
+          FontAwesomeIcons.longArrowAltUp,
+        ),
+        _buildExerciseTile(
+          "Decline Bench Press",
+          "3 sets of 10 reps",
+          FontAwesomeIcons.longArrowAltDown,
+        ),
       ],
     );
   }
@@ -278,18 +265,15 @@ class HomeTab extends StatelessWidget {
       ),
       title: Text(
         title,
-        style:
-        TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
           color: Colors.orange.shade700,
         ),
       ),
-      subtitle:
-      Text(
+      subtitle: Text(
         subtitle,
-        style:
-        TextStyle(
+        style: TextStyle(
           color: Colors.grey.shade600,
         ),
       ),

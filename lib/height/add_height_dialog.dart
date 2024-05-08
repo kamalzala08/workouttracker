@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class AddWeightDialog extends StatefulWidget {
-  final Function(double, DateTime) onAdd; // Callback for adding weight
+class AddHeightDialog extends StatefulWidget {
+  final Function(double, DateTime) onAdd; // Callback for adding height
 
-  AddWeightDialog({required this.onAdd}); // Pass in the callback
+  AddHeightDialog({required this.onAdd}); // Pass in the callback
 
   @override
-  _AddWeightDialogState createState() => _AddWeightDialogState();
+  _AddHeightDialogState createState() => _AddHeightDialogState();
 }
 
-class _AddWeightDialogState extends State<AddWeightDialog> {
-  final TextEditingController _weightController = TextEditingController();
+class _AddHeightDialogState extends State<AddHeightDialog> {
+  final TextEditingController _heightController = TextEditingController();
   final DateTime _today = DateTime.now(); // Today's date
 
   @override
@@ -22,7 +22,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
       ),
       backgroundColor: Colors.orange.shade50, // Soft background color
       title: Text(
-        'Add Today\'s Weight',
+        'Add Today\'s Height',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: Colors.orange, // Orange title text
@@ -45,11 +45,11 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
             ),
           ),
           TextField(
-            controller: _weightController,
+            controller: _heightController,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: 'Weight (kg)', // Label for weight entry
-              prefixIcon: Icon(Icons.fitness_center),
+              labelText: 'Height (cm)', // Label for height entry
+              prefixIcon: Icon(Icons.height),
               filled: true, // Filled background for text field
               fillColor: Colors.white70, // Light fill color
             ),
@@ -70,7 +70,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
           ),
         ),
         ElevatedButton(
-          onPressed: _addWeight, // Add the new weight entry
+          onPressed: _addHeight, // Add the new height entry
           child: Text(
             'Save',
             style: TextStyle(
@@ -89,17 +89,17 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     );
   }
 
-  void _addWeight() {
-    final weightText = _weightController.text.trim();
-    if (weightText.isNotEmpty) {
-      final weight = double.tryParse(weightText);
-      if (weight != null && weight > 0) {
-        widget.onAdd(weight, _today); // Call the callback to add weight
+  void _addHeight() {
+    final heightText = _heightController.text.trim();
+    if (heightText.isNotEmpty) {
+      final height = double.tryParse(heightText);
+      if (height != null && height > 0) {
+        widget.onAdd(height, _today); // Call the callback to add height
         Navigator.of(context).pop(); // Close the dialog after adding
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Please enter a valid weight.'),
+            content: Text('Please enter a valid height.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -107,7 +107,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please enter your weight.'),
+          content: Text('Please enter your height.'),
           backgroundColor: Colors.red,
         ),
       );
