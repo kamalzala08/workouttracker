@@ -3,6 +3,7 @@ import '../exercise.dart'; // Import the Exercise class
 class BicepsExerciseService {
   static final List<Exercise> bicepsExercises = [
     Exercise(
+      exerciseId: '008',
       name: 'Bicep Curl',
       level: 'Beginner',
       description: 'A basic exercise that targets the biceps using dumbbells.',

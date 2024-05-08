@@ -1,5 +1,6 @@
 
 class Exercise {
+  final String exerciseId ;
   final String name;
   final String level;
   final String description;
@@ -7,6 +8,7 @@ class Exercise {
   final String imagePath; // For storing the image location
 
   Exercise({
+    required this.exerciseId,
     required this.name,
     required this.level,
     required this.description,

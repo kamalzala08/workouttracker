@@ -3,6 +3,7 @@ import '../exercise.dart'; // Import the Exercise class
 class TrapsExerciseService {
   static final List<Exercise> trapsExercises = [
     Exercise(
+      exerciseId: '015',
       name: 'Shrugs',
       level: 'Beginner',
       description: 'An exercise to strengthen the trapezius muscles.',

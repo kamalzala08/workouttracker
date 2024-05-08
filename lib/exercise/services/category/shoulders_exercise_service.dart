@@ -3,6 +3,7 @@ import '../exercise.dart'; // Import the Exercise class
 class ShouldersExerciseService {
   static final List<Exercise> shouldersExercises = [
     Exercise(
+      exerciseId: '014',
       name: 'Shoulder Press',
       level: 'Intermediate',
       description:

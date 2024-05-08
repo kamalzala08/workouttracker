@@ -3,6 +3,7 @@ import '../exercise.dart'; // Import the Exercise class
 class LatsExerciseService {
   static final List<Exercise> latsExercises = [
     Exercise(
+      exerciseId: '012',
       name: 'Lat Pulldown',
       level: 'Intermediate',
       description:

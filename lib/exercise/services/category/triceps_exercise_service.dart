@@ -3,6 +3,7 @@ import '../exercise.dart'; // Import the Exercise class
 class TricepsExerciseService {
   static final List<Exercise> tricepsExercises = [
     Exercise(
+      exerciseId: '016',
       name: 'Tricep Dips',
       level: 'Intermediate',
       description:

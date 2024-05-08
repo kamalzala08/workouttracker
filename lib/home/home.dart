@@ -11,6 +11,7 @@ import '../profile/profile.dart';
 import '../profile/user.dart';
 import '../profile/userprovider.dart';
 import 'package:provider/provider.dart';
+import '../profile/services/user_details.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -92,7 +93,19 @@ class HomePageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String todayDate = DateFormat.yMMMMd().format(DateTime.now());
-    final userProvider = Provider.of<UserProvider>(context);
+
+    //test login less
+    User user2 = User(
+      uid: 'RMSBG6dK2RUR4NiQad6OCfTYSVE3', // Convert UID to integer
+      email: 'test3@test.com', // Get email
+    );
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false); // Access UserProvider
+    userProvider.setUser(user2);
+
+    //test login less
+
+    // final userProvider = Provider.of<UserProvider>(context);//remove this comment
     final currentUser = userProvider.currentUser;
 
     return SingleChildScrollView(
@@ -110,41 +123,48 @@ class HomePageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeSection(String todayDate, User? currentUser) {
-    final userName = currentUser != null ? currentUser.name : 'Guest';
+      Widget _buildWelcomeSection(String todayDate, User? currentUser) {
+        // final userName = currentUser != null ? currentUser.name : 'Guest';
+        final userUID = currentUser != null ? currentUser.uid : '00000';
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hello, $userName',
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: Colors.orange.shade800,
-            letterSpacing: 1.5,
-          ),
-        ),
-        SizedBox(height: 8),
-        Row(
+        //bypassing login
+
+        // final userUID ='RMSBG6dK2RUR4NiQad6OCfTYSVE3';
+
+
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              FontAwesomeIcons.calendarDay,
-              color: Colors.orange.shade700,
-            ),
-            SizedBox(width: 8),
             Text(
-              todayDate,
+              'Hello, Kamal Zala',
               style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey.shade600,
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.orange.shade800,
+                letterSpacing: 1.5,
               ),
             ),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  FontAwesomeIcons.calendarDay,
+                  color: Colors.orange.shade700,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  todayDate,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
           ],
-        ),
-      ],
-    );
-  }
+        );
+      }
 
   Widget _buildTrackerSection(BuildContext context) {
     return Row(

@@ -203,10 +203,8 @@ class _LoginState extends State<Login> {
         User user2 = User(
           uid: user.uid ?? '00', // Convert UID to integer
           email: user.email ?? '', // Get email
-          name: user.displayName ?? '', // Get display name
         );
-        print("email");
-        print(user.email);
+
         final userProvider = Provider.of<UserProvider>(context, listen: false); // Access UserProvider
         userProvider.setUser(user2); // Set user in UserProvider
         Navigator.push(

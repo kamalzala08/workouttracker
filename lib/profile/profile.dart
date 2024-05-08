@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth for logout
 import '../components/appbar.dart';
 import '../components/bottom_navigation.dart';
 import '../exercise/screens/exercise_categories.dart';
 import '../home/home.dart';
 import '../videos/video_list.dart';
+import '../auth/screens/login.dart'; // Import the login page/screen
 
 class ProfilePage extends StatelessWidget {
-  int _currentIndex = 3;
+  final int _currentIndex = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class ProfilePage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'kamalzala07@gmail.com',
+              'test3@test.com ',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -65,8 +67,17 @@ class ProfilePage extends StatelessWidget {
             ListTile(
               title: Text('Logout'),
               leading: Icon(Icons.logout, color: Colors.red),
-              onTap: () {
+              onTap: () async {
                 // Perform logout action
+                await FirebaseAuth.instance.signOut(); // Sign out from Firebase
+
+                // Navigate to the login page after logging out
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Login(), // Redirect to login page
+                  ),
+                );
               },
             ),
           ],

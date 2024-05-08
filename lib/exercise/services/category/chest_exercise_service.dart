@@ -3,6 +3,7 @@ import '../exercise.dart'; // Import the Exercise class
 class ChestExerciseService {
   static final List<Exercise> chestExercises = [
     Exercise(
+      exerciseId: '001',
       name: 'Bench Press',
       level: 'Intermediate',
       description:
@@ -15,6 +16,7 @@ class ChestExerciseService {
       imagePath: 'assets/images/exercises/chest/bench_press.png',
     ),
     Exercise(
+      exerciseId: '002',
       name: 'Push-ups',
       level: 'Beginner',
       description:
@@ -27,6 +29,7 @@ class ChestExerciseService {
       imagePath: 'assets/images/exercises/chest/push_ups.png',
     ),
     Exercise(
+      exerciseId: '003',
       name: 'Chest Fly',
       level: 'Intermediate',
       description:
@@ -40,6 +43,7 @@ class ChestExerciseService {
       imagePath: 'assets/images/exercises/chest/chest_fly.png',
     ),
     Exercise(
+      exerciseId: '004',
       name: 'Incline Bench Press',
       level: 'Intermediate',
       description: 'Targets the upper part of the chest and shoulders.',
@@ -51,6 +55,7 @@ class ChestExerciseService {
       imagePath: 'assets/images/exercises/chest/incline_bench_press.png',
     ),
     Exercise(
+      exerciseId: '005',
       name: 'Decline Bench Press',
       level: 'Expert',
       description:
@@ -63,6 +68,7 @@ class ChestExerciseService {
       imagePath: 'assets/images/exercises/chest/decline_bench_press.png',
     ),
     Exercise(
+      exerciseId: '006',
       name: 'Cable Crossover',
       level: 'Expert',
       description:

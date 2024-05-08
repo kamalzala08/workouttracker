@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:workouttracker/auth/screens/login.dart';
 import 'profile/userprovider.dart'; // Import your UserProvider
+import 'home/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Required for Firebase initialization
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: Login(),
+        home: HomePage(),
         debugShowCheckedModeBanner: false,
       ),
     );
