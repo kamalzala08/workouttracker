@@ -7,7 +7,7 @@ class LoginService {
   final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Authentication instance
   final CollectionReference _loginAttemptsCollection =
   FirebaseFirestore.instance.collection('login_attempts'); // Firestore collection for tracking login attempts
-
+  final CollectionReference _usersCollection =   FirebaseFirestore.instance.collection('users');
   // Email/password login with escalating lockout periods
   Future<User?> signInWithEmailAndPassword(String email, String password, BuildContext context) async {
     try {
@@ -81,6 +81,7 @@ class LoginService {
   }
 
   // Google sign-in
+  // Google sign-in with email verification
   Future<User?> signInWithGoogle(BuildContext context) async {
     final googleSignIn = GoogleSignIn(); // Google Sign-In instance
     try {
@@ -89,6 +90,20 @@ class LoginService {
         return null; // User canceled the sign-in
       }
 
+      final email = googleUser.email;
+
+      // Check if this email exists in the Firestore users collection
+      final existingUserDoc = await _usersCollection.doc(email).get();
+
+      if (!existingUserDoc.exists) {
+        // If the email does not exist in the registered users collection
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No account found with email: $email")),
+        );
+        return null; // Exit early if the email is not registered
+      }
+
+      // If the email is registered, proceed with Firebase Authentication
       final googleAuth = await googleUser.authentication; // Get Google authentication details
       final credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
